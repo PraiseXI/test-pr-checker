@@ -4,13 +4,8 @@ pipeline {
     stages {
         stage('Test Stage') {
             steps {
-                echo 'Testing... - This should complete'
-            }
-        }
-
-        stage('Echo Env Variables') {
-            steps {
                 script {
+                    echo 'Testing PR Variables...'
                     def prTitle = env.CHANGE_TITLE
                     def prDesc = env.CHANGE_DESCRIPTION
                     echo 'PR TITLE: ' + prTitle
@@ -18,6 +13,21 @@ pipeline {
                 }
             }
         }
+
+        stage('Check PR Title') {
+            steps {
+                script {
+                    def prTitle = env.CHANGE_TITLE
+
+                    // The title pattern ensures that the title contains either the word "fix" or "feat"
+                    def titlePattern = ~/(?i).*\b(fix|feat)\b.*/
+
+                    // Validate title and description
+                    if (!prTitle.matches(titlePattern)) {
+                        error "PR title does not match the required format (must contain 'fix' or 'feat')"
+                    }
+                }
+            }
+        }
     }
 }
-
