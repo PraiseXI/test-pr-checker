@@ -2,20 +2,22 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Test Stage') {
             steps {
-                echo 'Building....'
-            }
-        }
-        stage('Test') {
-            steps {
-                echo 'Testing...'
+                echo 'Testing... - This should complete'
             }
         }
     
-        stage('Deploy') {
+        stage('Echo Env Variables') {
             steps {
-                echo 'Deploying...'
+		script {
+			def prTitle = env.CHANGE_TITLE
+			def prDesc = env.CHANGE_DESCRIPTION                
+			echo 'PR TITLE:'
+			echo prTitle
+			echo 'prDescription'
+			echo prDesc
+		}
             }
         }
     }
