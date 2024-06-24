@@ -13,8 +13,8 @@ pipeline {
                 script {
                     def prTitle = env.CHANGE_TITLE
                     def prDesc = env.CHANGE_DESCRIPTION
-                    echo 'PR TITLE:' + prTitle
-                    echo 'prDescription' + prDesc
+                    echo 'PR TITLE: ' + prTitle
+                    echo 'prDescription ' + prDesc
                 }
             }
         }
