@@ -26,6 +26,9 @@ pipeline {
                     if (!prTitle =~ titlePattern) {
                         error "PR title does not match the required format (must contain 'fix' or 'feat')"
                     }
+                    else {
+                        echo "Title all good"
+                    }
                 }
             }
         }
