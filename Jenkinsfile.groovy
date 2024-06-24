@@ -23,7 +23,7 @@ pipeline {
                     def titlePattern = ~/(?i).*\b(fix|feat)\b.*/
 
                     // Validate title and description
-                    if (!prTitle.matches(titlePattern)) {
+                    if (!prTitle =~ titlePattern) {
                         error "PR title does not match the required format (must contain 'fix' or 'feat')"
                     }
                 }
