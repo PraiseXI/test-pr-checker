@@ -17,7 +17,7 @@ pipeline {
                     echo prTitle
                     echo 'prDescription'
                     echo prDesc
-                    echo "PR: ${prTtitle}"
+                    echo "PR" + prTitle
                 }
             }
         }
