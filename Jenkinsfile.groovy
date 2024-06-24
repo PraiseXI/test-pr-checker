@@ -10,12 +10,14 @@ pipeline {
     
         stage('Echo Env Variables') {
             steps {
-		def prTitle = env.CHANGE_TITLE
-		def prDesc = env.CHANGE_DESCRIPTION
-                echo 'PR TITLE:'
-		echo prTitle
-		echo 'prDescription'
-		echo prDesc
+		script {
+			def prTitle = env.CHANGE_TITLE
+			def prDesc = env.CHANGE_DESCRIPTION                
+			echo 'PR TITLE:'
+			echo prTitle
+			echo 'prDescription'
+			echo prDesc
+		}
             }
         }
     }
