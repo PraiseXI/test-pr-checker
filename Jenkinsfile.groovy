@@ -17,7 +17,12 @@ pipeline {
         stage('Check PR Title') {
             steps {
                 script {
-                    def prTitle = env.CHANGE_TITLE?.trim() // Trim to remove any leading/trailing spaces
+                    def prTitle = env.CHANGE_TITLE
+                    if (prTitle == null) {
+                        error 'PR title is null'
+                    }
+
+                    prTitle = prTitle.trim() // Trim to remove any leading/trailing spaces
                     echo 'Trimmed PR TITLE: ' + prTitle
 
                     // The title pattern ensures that the title starts with "feat: SMARTJRNYS-" or "fix: SMARTJRNYS-"
@@ -36,7 +41,12 @@ pipeline {
         stage('Check PR Description') {
             steps {
                 script {
-                    def prDescription = env.CHANGE_DESCRIPTION?.trim() // Trim to remove any leading/trailing spaces
+                    def prDescription = env.CHANGE_DESCRIPTION
+                    if (prDescription == null) {
+                        error 'PR description is null'
+                    }
+
+                    prDescription = prDescription.trim() // Trim to remove any leading/trailing spaces
                     echo 'Trimmed PR DESCRIPTION: ' + prDescription
 
                     // The description pattern ensures it contains a link with the base URL
