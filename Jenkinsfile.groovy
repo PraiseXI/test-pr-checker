@@ -61,25 +61,41 @@ pipeline {
         stage('Fetch PR Info') {
             steps {
                 script {
-                    def prDescription = ''
-                    def prNumber = env.GIT_BRANCH.split('-')[1]
+                    // Fetch commit messages for the current branch
+                    def commitMessages = sh(script: 'git log --format=%B -n 10', returnStdout: true).trim()
 
-                        // Fetch the merge commit message
-                        def commitMessage = sh(
-                            script: 'git log -1 --pretty=%B',
-                            returnStdout: true
-                        ).trim()
+                    // Search for SMARTJRNYS Jira ticket in commit messages
+                    def jiraTicket = ''
+                    def matcher = commitMessages =~ /https:\/\/jira\.devops\.lloydsbanking\.com\/browse\/SMARTJRNYS-(\d+)/
+                    if (matcher.find()) {
+                        jiraTicket = "SMARTJRNYS-${matcher.group(1)}"
+                        echo "SMARTJRNYS Jira Ticket found: ${jiraTicket}"
+                    } else {
+                        echo 'No SMARTJRNYS Jira ticket found in recent commit messages'
+                    }
 
-                        // Parse the commit message to extract PR description
-                        def messageLines = commitMessage.split('\n')
-                        def descriptionStartIndex = messageLines.findIndexOf { it.isEmpty() } + 1;
-                        if (descriptionStartIndex > 0 && descriptionStartIndex < messageLines.size()) {
-                            prDescription = messageLines[descriptionStartIndex..-1].join('\n')
-                        }
+                    // Search for PR comment indicator
+                    def prComment = ''
+                    def commentMatcher = commitMessages =~ /PR Comment: (.*)/
+                    if (commentMatcher.find()) {
+                        prComment = commentMatcher.group(1)
+                        echo "PR Comment found: ${prComment}"
+                    } else {
+                        echo 'No PR comment found in recent commit messages'
+                    }
 
-                        echo "PR Number: ${prNumber}"
-                        echo "PR Description: ${prDescription}"
+                    // Store these as environment variables for use in later stages
+                    env.JIRA_TICKET = jiraTicket
+                    env.PR_COMMENT = prComment
                 }
+            }
+        }
+
+        stage('Use PR Info') {
+            steps {
+                echo "Using Jira Ticket: ${env.JIRA_TICKET}"
+                echo "Using PR Comment: ${env.PR_COMMENT}"
+                // Use these variables in your build steps as needed
             }
         }
 
