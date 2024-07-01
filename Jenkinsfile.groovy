@@ -58,7 +58,7 @@ pipeline {
             steps {
                 script {
                     // Fetch commit messages
-                    def commitMessages = sh(script: 'git log --format=%B -n 10', returnStdout: true).trim().split('\n')
+                    def commitMessages = sh(script: 'git log --format=%B -n 1', returnStdout: true).trim().split('\n')
                     // Define the Jira link pattern
                     def jiraLinkPattern = ~/(?i)^(feat: SMARTJRNYS-|fix: SMARTJRNYS-).*/
 
