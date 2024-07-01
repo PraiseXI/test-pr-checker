@@ -18,8 +18,8 @@ pipeline {
                         'GIT_CHECKOUT_DIR', 'GIT_URL', 'GIT_COMMITTER_NAME', 'GIT_AUTHOR_NAME', 'GIT_COMMITTER_EMAIL',
                         'GIT_AUTHOR_EMAIL'
                     ]
-                    envVars.each { var ->
-                        echo "${var}: ${env[var]}"
+                    for (var in envVars) {
+                        echo "${var}: ${env.getProperty(var)}"
                     }
                 }
             }
