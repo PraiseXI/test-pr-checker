@@ -63,7 +63,7 @@ pipeline {
                     def jiraLinkPattern = ~/(?i)https:\/\/jira\.devops\.lloydsbanking\.com\/browse\/SMARTJRNYS\S*/
 
                     // Check if any commit message contains a Jira link
-                    if (jiraLinkPattern.matcher(commitMessages).find()) {
+                    if (jiraLinkPattern.matcher(commitMessages).matches()) {
                         echo "Jira link found in commits."
                     } else {
                         error 'No Jira link found in recent commit messages'
