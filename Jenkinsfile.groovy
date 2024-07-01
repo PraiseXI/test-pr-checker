@@ -2,10 +2,13 @@ pipeline {
     agent any
 
     stages {
+
+        
         stage('Print Variables') {
             steps {
                 script {
                     echo 'Printing all relevant environment variables...'
+                    echo "CHANGE_BODY: ${env.CHANGE_BODY}"
                     echo "BRANCH_NAME: ${env.BRANCH_NAME}"
                     echo "BRANCH_IS_PRIMARY: ${env.BRANCH_IS_PRIMARY}"
                     echo "CHANGE_ID: ${env.CHANGE_ID}"
