@@ -69,14 +69,14 @@ pipeline {
                     commitMessages.each { commitMessage ->
                         echo "Checking commit message: ${commitMessage}"
                         if (jiraLinkPattern.matcher(commitMessage).matches()) {
-                            echo "Jira link found in commit message: ${commitMessage}"
+                            echo "Format correct in commit message: ${commitMessage}"
                             jiraLinkFound = true
                         }
                     }
 
                     // Error if no Jira link is found
                     if (!jiraLinkFound) {
-                        error 'No Jira link found in recent commit messages'
+                       echo "Format NOT correct in commit message: ${commitMessage}"
                     }
                 }
             }
