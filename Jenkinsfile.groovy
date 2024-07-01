@@ -76,7 +76,7 @@ pipeline {
 
                     // Error if no Jira link is found
                     if (!jiraLinkFound) {
-                       echo "Format NOT correct in commit message: ${commitMessage}"
+                       echo "Format NOT correct in commit message"
                     }
                 }
             }
