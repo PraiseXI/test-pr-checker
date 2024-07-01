@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     stages {
-
         stage('Print Variables') {
             steps {
                 script {
@@ -62,6 +61,7 @@ pipeline {
         stage('Fetch PR Info') {
             steps {
                 script {
+                    def prDescription = ''
                     def prNumber = env.GIT_BRANCH.split('-')[1]
 
                         // Fetch the merge commit message
