@@ -60,7 +60,7 @@ pipeline {
                     // Fetch commit messages
                     def commitMessages = sh(script: 'git log --format=%B -n 10', returnStdout: true).trim()
                     // Define the Jira link pattern
-                    def jiraLinkPattern = ~/(?i)https:\/\/jira\.devops\.lloydsbanking\.com\/browse\/SMARTJRNYS\S*/
+                    def jiraLinkPattern = ~/(?i)^(feat: SMARTJRNYS-|fix: SMARTJRNYS-).*/
 
                     // Check if any commit message contains a Jira link
                     if (jiraLinkPattern.matcher(commitMessages).matches()) {
