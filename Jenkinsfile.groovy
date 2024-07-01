@@ -58,6 +58,15 @@ pipeline {
             }
         }
 
+        stage('Debug: Print Commits') {
+            steps {
+                script {
+                    echo 'Recent Commits:'
+                    sh 'git log --format="%h - %s" -n 10'
+                }
+            }
+                }
+
         stage('Fetch PR Info') {
             steps {
                 script {
@@ -95,7 +104,7 @@ pipeline {
             steps {
                 echo "Using Jira Ticket: ${env.JIRA_TICKET}"
                 echo "Using PR Comment: ${env.PR_COMMENT}"
-                // Use these variables in your build steps as needed
+            // Use these variables in your build steps as needed
             }
         }
 
