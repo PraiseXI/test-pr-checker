@@ -57,7 +57,7 @@ pipeline {
             }
         }
 
-        stage('Debug: Print PR Commits') {
+        stage('Print PR Commits') {
             steps {
                 script {
                     echo 'Recent Commits:'
@@ -90,7 +90,7 @@ pipeline {
             }
         }
 
-        stage('Check PR Commits for Jira Link') {
+        stage('Check PR Commits') {
             steps {
                 script {
                     // Fetch commit messages for the current branch
@@ -102,8 +102,6 @@ pipeline {
                     if (matcher.find()) {
                         jiraLinkFound = true
                         echo "Jira link found in commits: ${matcher.group()}"
-                    } else {
-                        echo 'No Jira link found in recent commit messages'
                     }
 
                     // Fail the build if no Jira link is found
