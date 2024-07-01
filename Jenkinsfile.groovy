@@ -2,11 +2,10 @@ pipeline {
     agent any
 
     stages {
-        stage('Print Variables') {
+        stage('Print All Available Variables') {
             steps {
                 script {
                     echo 'Printing all relevant environment variables...'
-                    echo "CHANGE_BODY: ${env.CHANGE_BODY}"
                     echo "BRANCH_NAME: ${env.BRANCH_NAME}"
                     echo "BRANCH_IS_PRIMARY: ${env.BRANCH_IS_PRIMARY}"
                     echo "CHANGE_ID: ${env.CHANGE_ID}"
@@ -58,53 +57,12 @@ pipeline {
             }
         }
 
-        stage('Debug: Print Commits') {
+        stage('Debug: Print PR Commits') {
             steps {
                 script {
                     echo 'Recent Commits:'
                     sh 'git log --format="%h - %s" -n 10'
                 }
-            }
-                }
-
-        stage('Fetch PR Info') {
-            steps {
-                script {
-                    // Fetch commit messages for the current branch
-                    def commitMessages = sh(script: 'git log --format=%B -n 10', returnStdout: true).trim()
-
-                    // Search for SMARTJRNYS Jira ticket in commit messages
-                    def jiraTicket = ''
-                    def matcher = commitMessages =~ /https:\/\/jira\.devops\.lloydsbanking\.com\/browse\/SMARTJRNYS-(\d+)/
-                    if (matcher.find()) {
-                        jiraTicket = "SMARTJRNYS-${matcher.group(1)}"
-                        echo "SMARTJRNYS Jira Ticket found: ${jiraTicket}"
-                    } else {
-                        echo 'No SMARTJRNYS Jira ticket found in recent commit messages'
-                    }
-
-                    // Search for PR comment indicator
-                    def prComment = ''
-                    def commentMatcher = commitMessages =~ /PR Comment: (.*)/
-                    if (commentMatcher.find()) {
-                        prComment = commentMatcher.group(1)
-                        echo "PR Comment found: ${prComment}"
-                    } else {
-                        echo 'No PR comment found in recent commit messages'
-                    }
-
-                    // Store these as environment variables for use in later stages
-                    env.JIRA_TICKET = jiraTicket
-                    env.PR_COMMENT = prComment
-                }
-            }
-        }
-
-        stage('Use PR Info') {
-            steps {
-                echo "Using Jira Ticket: ${env.JIRA_TICKET}"
-                echo "Using PR Comment: ${env.PR_COMMENT}"
-            // Use these variables in your build steps as needed
             }
         }
 
@@ -144,25 +102,25 @@ pipeline {
             }
         }
 
-        stage('Check PR Description') {
+        stage('Check PR Commits for Jira Link') {
             steps {
                 script {
-                    def prDescription = env.CHANGE_DESCRIPTION
-                    if (prDescription == null) {
-                        error 'PR description is null'
+                    // Fetch commit messages for the current branch
+                    def commitMessages = sh(script: 'git log --format=%B -n 10', returnStdout: true).trim()
+
+                    // Search for Jira link in commit messages
+                    def jiraLinkFound = false
+                    def matcher = commitMessages =~ /(?i)https:\/\/jira\.devops\.lloydsbanking\.com\/browse\/SMARTJRNYS\S*/
+                    if (matcher.find()) {
+                        jiraLinkFound = true
+                        echo "Jira link found in commits: ${matcher.group()}"
+                    } else {
+                        echo 'No Jira link found in recent commit messages'
                     }
 
-                    prDescription = prDescription.trim() // Trim to remove any leading/trailing spaces
-                    echo 'Trimmed PR DESCRIPTION: ' + prDescription
-
-                    // The description pattern ensures it contains a link with the base URL
-                    def descriptionPattern = ~/(?i)https:\/\/jira\.devops\.lloydsbanking\.com\/browse\/SMARTJRNYS\S*/
-
-                    // Validate description
-                    if (descriptionPattern.matcher(prDescription).find()) {
-                        echo 'Description all good'
-                    } else {
-                        error 'PR description does not contain the required Jira link'
+                    // Fail the build if no Jira link is found
+                    if (!jiraLinkFound) {
+                        error 'No Jira link found in recent commit messages'
                     }
                 }
             }
