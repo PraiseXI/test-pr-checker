@@ -3,7 +3,6 @@ pipeline {
 
     stages {
 
-        
         stage('Print Variables') {
             steps {
                 script {
@@ -56,6 +55,30 @@ pipeline {
                     echo "GIT_AUTHOR_NAME: ${env.GIT_AUTHOR_NAME}"
                     echo "GIT_COMMITTER_EMAIL: ${env.GIT_COMMITTER_EMAIL}"
                     echo "GIT_AUTHOR_EMAIL: ${env.GIT_AUTHOR_EMAIL}"
+                }
+            }
+        }
+
+        stage('Fetch PR Info') {
+            steps {
+                script {
+                    def prNumber = env.GIT_BRANCH.split('-')[1]
+
+                        // Fetch the merge commit message
+                        def commitMessage = sh(
+                            script: 'git log -1 --pretty=%B',
+                            returnStdout: true
+                        ).trim()
+
+                        // Parse the commit message to extract PR description
+                        def messageLines = commitMessage.split('\n')
+                        def descriptionStartIndex = messageLines.findIndexOf { it.isEmpty() } + 1;
+                        if (descriptionStartIndex > 0 && descriptionStartIndex < messageLines.size()) {
+                            prDescription = messageLines[descriptionStartIndex..-1].join('\n')
+                        }
+
+                        echo "PR Number: ${prNumber}"
+                        echo "PR Description: ${prDescription}"
                 }
             }
         }
