@@ -37,10 +37,14 @@ pipeline {
         stage('Check PR Title') {
             steps {
                 script {
+                    // Fetch and trim the PR title
                     def prTitle = env.CHANGE_TITLE?.trim() ?: error('PR title is null or empty')
                     echo 'Trimmed PR TITLE: ' + prTitle
 
+                    // Define the title pattern
                     def titlePattern = ~/(?i)^(feat: SMARTJRNYS-|fix: SMARTJRNYS-).*/
+
+                    // Validate the PR title against the pattern
                     if (titlePattern.matcher(prTitle).matches()) {
                         echo 'Title all good'
                     } else {
@@ -53,9 +57,12 @@ pipeline {
         stage('Check PR Commits') {
             steps {
                 script {
+                    // Fetch commit messages
                     def commitMessages = sh(script: 'git log --format=%B -n 10', returnStdout: true).trim()
+                    // Define the Jira link pattern
                     def jiraLinkPattern = ~/(?i)https:\/\/jira\.devops\.lloydsbanking\.com\/browse\/SMARTJRNYS\S*/
 
+                    // Check if any commit message contains a Jira link
                     if (jiraLinkPattern.matcher(commitMessages).find()) {
                         echo "Jira link found in commits."
                     } else {
