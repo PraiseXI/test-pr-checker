@@ -58,14 +58,24 @@ pipeline {
             steps {
                 script {
                     // Fetch commit messages
-                    def commitMessages = sh(script: 'git log --format=%B -n 10', returnStdout: true).trim()
+                    def commitMessages = sh(script: 'git log --format=%B -n 10', returnStdout: true).trim().split('\n')
                     // Define the Jira link pattern
                     def jiraLinkPattern = ~/(?i)^(feat: SMARTJRNYS-|fix: SMARTJRNYS-).*/
 
+                    // Flag to check if a Jira link is found
+                    def jiraLinkFound = false
+
                     // Check if any commit message contains a Jira link
-                    if (jiraLinkPattern.matcher(commitMessages).matches()) {
-                        echo "Jira link found in commits."
-                    } else {
+                    commitMessages.each { commitMessage ->
+                        echo "Checking commit message: ${commitMessage}"
+                        if (jiraLinkPattern.matcher(commitMessage).matches()) {
+                            echo "Jira link found in commit message: ${commitMessage}"
+                            jiraLinkFound = true
+                        }
+                    }
+
+                    // Error if no Jira link is found
+                    if (!jiraLinkFound) {
                         error 'No Jira link found in recent commit messages'
                     }
                 }
