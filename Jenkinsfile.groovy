@@ -66,18 +66,6 @@ pipeline {
             }
         }
 
-        stage('Test Stage') {
-            steps {
-                script {
-                    echo 'Testing PR Variables...'
-                    def prTitle = env.CHANGE_TITLE
-                    def prDesc = env.CHANGE_DESCRIPTION
-                    echo 'PR TITLE: ' + prTitle
-                    echo 'PR DESCRIPTION: ' + prDesc
-                }
-            }
-        }
-
         stage('Check PR Title') {
             steps {
                 script {
